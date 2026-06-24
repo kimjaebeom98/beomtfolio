@@ -470,7 +470,7 @@
       const Wd = gridW + PAD * 2, Hd = gridH + PAD + SHIP_ZONE;
       const LV = ["#1c2128", "#0e4429", "#006d32", "#26a641", "#39d353"];
       canvas.width = Wd * DPR; canvas.height = Hd * DPR;
-      canvas.style.width = Wd + "px"; canvas.style.height = Hd + "px";
+      canvas.style.width = "100%"; canvas.style.maxWidth = Wd + "px"; canvas.style.height = "auto";
       ctx.scale(DPR, DPR);
 
       let levels = [];       // 원본 레벨 (col-major: index = col*ROWS + row)
