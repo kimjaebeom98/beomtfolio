@@ -35,10 +35,11 @@
     /* ===== 상단 바 ===== */
     .topbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: flex-end;
       padding: 22px 28px;
     }
-    .topbar .logo { font-family: "Fira Code", monospace; font-size: 22px; font-weight: 700; font-style: italic; color: var(--text); }
+    .topbar .logo { position: absolute; left: 50%; transform: translateX(-50%);
+      font-family: "Fira Code", monospace; font-size: 22px; font-weight: 700; font-style: italic; color: var(--text); }
     .icon-btn { background: none; border: none; color: var(--text); cursor: pointer; padding: 4px; display: flex; }
     /* 다크/라이트 토글 스위치 */
     .toggle { width: 52px; height: 28px; border-radius: 999px; border: none; cursor: pointer;
@@ -48,10 +49,13 @@
     [data-theme="dark"] .toggle::after { transform: translateX(24px); }
 
     /* ===== 히어로 ===== */
-    .hero { position: relative; min-height: 100vh; display: flex; }
+    .hero { position: relative; min-height: 100vh; display: flex; overflow: hidden; }
+    /* 애니메이션 배경 (대각선 네온 빛줄기) */
+    .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; transition: opacity .4s; }
+    [data-theme="light"] .hero-bg { opacity: 0; }
     .hero-center {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 100%; padding: 0 16px; text-align: center;
+      width: 100%; padding: 0 16px; text-align: center; z-index: 2;
     }
     .name {
       font-family: "Fira Code", monospace; font-weight: 700; color: var(--accent);
@@ -78,11 +82,11 @@
     .photo img { height: 100%; width: auto; object-fit: contain; display: block; filter: drop-shadow(0 24px 50px rgba(0,0,0,.55)); }
     /* 하단 태그라인 */
     .tagline {
-      position: absolute; bottom: 14vh; left: 50%; transform: translateX(-50%);
+      position: absolute; bottom: 14vh; left: 50%; transform: translateX(-50%); z-index: 2;
       font-family: "Antic", sans-serif; color: var(--muted);
       font-size: clamp(15px, 2vw, 22px); white-space: nowrap;
     }
-    .chev { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+    .chev { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 2;
       color: var(--muted); animation: bob 1.8s ease-in-out infinite; }
     @keyframes bob { 0%,100%{ transform: translateX(-50%) translateY(0);} 50%{ transform: translateX(-50%) translateY(8px);} }
 
@@ -111,20 +115,44 @@
       padding: 4px 11px; border-radius: 999px; }
     footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 60px;
       font-family: "Fira Code", monospace; }
+
+    /* ===== 오른쪽 사이드 네비게이션 (목차) ===== */
+    .sidenav {
+      position: fixed; top: 50%; right: clamp(40px, 6vw, 120px); transform: translateY(-50%); z-index: 40;
+      display: flex; flex-direction: column; gap: 16px;
+      opacity: 0; pointer-events: none; transition: opacity .4s ease;
+    }
+    .sidenav.show { opacity: 1; pointer-events: auto; }
+    .sidenav a {
+      font-family: "Fira Code", monospace; font-size: 12px; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--muted); text-decoration: none;
+      display: flex; align-items: center; gap: 10px; transition: color .25s;
+    }
+    .sidenav a::before { content: ""; width: 16px; height: 1px; background: currentColor; transition: width .25s; }
+    .sidenav a:hover { color: var(--text); }
+    .sidenav a.active { color: var(--accent); }
+    .sidenav a.active::before { width: 34px; }
+    @media (max-width: 900px) { .sidenav { display: none; } }
   </style>
 </head>
 <body>
   <!-- 상단 바 -->
   <header class="topbar">
-    <button class="icon-btn" aria-label="menu">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-    </button>
     <div class="logo">Beomtfolio</div>
     <button class="toggle" id="themeToggle" aria-label="테마 전환"></button>
   </header>
 
+  <!-- 오른쪽 사이드 네비게이션 (스크롤하면 나타남) -->
+  <nav class="sidenav" id="sidenav">
+    <a href="#about">About</a>
+    <a href="#career">Career</a>
+    <a href="#projects">Projects</a>
+    <a href="#skills">Skills</a>
+  </nav>
+
   <!-- ===================== 히어로 ===================== -->
   <main class="hero">
+    <canvas class="hero-bg" id="heroBg"></canvas>
     <div class="hero-center">
       <!-- ▼ 이름: 글자 하나씩 span. 본인 이름으로 바꾸면 됩니다 ▼ -->
       <div class="name" data-animate>JAEBEOM</div>
@@ -191,7 +219,71 @@
       });
     });
 
-    // 2) 다크/라이트 토글 (선택값 저장)
+    // 2) 오른쪽 목차: 히어로 지나면 나타나고, 현재 섹션 강조
+    const sidenav = document.getElementById("sidenav");
+    const navLinks = sidenav.querySelectorAll("a");
+    const sections = document.querySelectorAll("section[id]");
+    function onScroll() {
+      const y = window.scrollY;
+      sidenav.classList.toggle("show", y > window.innerHeight * 0.6);
+      let current = "";
+      sections.forEach((sec) => { if (y >= sec.offsetTop - 130) current = sec.id; });
+      navLinks.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + current));
+    }
+    window.addEventListener("scroll", onScroll);
+    onScroll();
+
+    // 3) 히어로 배경: 대각선 네온 빛줄기 애니메이션 (Canvas)
+    (function () {
+      const canvas = document.getElementById("heroBg");
+      const ctx = canvas.getContext("2d");
+      const DPR = Math.min(window.devicePixelRatio || 1, 2);
+      const ANGLE = 0.92;                       // 빛줄기 각도(라디안)
+      const DIR = { x: Math.cos(ANGLE), y: Math.sin(ANGLE) };
+      const COLORS = ["195,228,29", "60,120,255", "40,200,160", "120,90,255"];
+      let W, H, streaks;
+      const LOOP = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      function resize() {
+        const r = canvas.getBoundingClientRect();
+        W = canvas.width = Math.max(1, r.width * DPR);
+        H = canvas.height = Math.max(1, r.height * DPR);
+        const N = Math.min(70, Math.round((W * H) / (90000 * DPR)));
+        streaks = Array.from({ length: N }, () => spawn(true));
+      }
+      function spawn(initial) {
+        return {
+          x: Math.random() * W * 1.3 - W * 0.15,
+          y: initial ? Math.random() * H : -Math.random() * H * 0.5,
+          len: (90 + Math.random() * 230) * DPR,
+          speed: (1.2 + Math.random() * 3.2) * DPR,
+          w: (Math.random() * 1.4 + 0.5) * DPR,
+          color: COLORS[(Math.random() * COLORS.length) | 0],
+          alpha: 0.25 + Math.random() * 0.6,
+        };
+      }
+      function frame() {
+        ctx.clearRect(0, 0, W, H);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.lineCap = "round";
+        for (const s of streaks) {
+          const tx = s.x - DIR.x * s.len, ty = s.y - DIR.y * s.len;
+          const g = ctx.createLinearGradient(s.x, s.y, tx, ty);
+          g.addColorStop(0, `rgba(${s.color},${s.alpha})`);
+          g.addColorStop(1, `rgba(${s.color},0)`);
+          ctx.strokeStyle = g; ctx.lineWidth = s.w;
+          ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(tx, ty); ctx.stroke();
+          s.x += DIR.x * s.speed; s.y += DIR.y * s.speed;
+          if (ty > H || tx > W) Object.assign(s, spawn(false));
+        }
+        if (LOOP) requestAnimationFrame(frame);
+      }
+      resize();
+      window.addEventListener("resize", resize);
+      frame(); // LOOP가 false면 정적 한 프레임만 그림
+    })();
+
+    // 4) 다크/라이트 토글 (선택값 저장)
     const root = document.documentElement;
     const saved = localStorage.getItem("theme");
     if (saved) root.setAttribute("data-theme", saved);
