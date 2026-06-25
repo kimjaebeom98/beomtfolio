@@ -235,7 +235,7 @@
       <h2>About</h2>
       <p class="lead">SW 엔지니어 · 4년차</p>
       <p>대용량 데이터와 실시간 데이터 파이프라인을 다뤄온 <b>4년차 백엔드 엔지니어</b>입니다. </br>복잡한 비즈니스 프로세스를 코드로 풀어내고, 데이터가 정확히 맞아떨어질 때 개발이 가장 재밌어지는 사람입니다.</p>
-      <p>현대차그룹의 다차원 BI 시스템과 명품 커머스의 실시간 카탈로그 파이프라인을 다뤘으며,</br>복잡한 비즈니스 로직의 정확한 구현과 <b>데이터 정합성 확보</b>에 강점이 있습니다.</p>
+      <p>현대차그룹의 다차원 BI 시스템과 명품 커머스 플랫폼의 실시간 카탈로그 파이프라인을 다뤘으며,</br>복잡한 비즈니스 로직의 정확한 구현과 <b>데이터 정합성 확보</b>에 강점이 있습니다.</p>
       <p>사내에서는 전사 AI 활용 역량 강화 활동(AI 도구 개발·커뮤니티 운영)과 </br>개인적으로 바이브코딩으로 사이드 프로젝트를 꾸준히 만들고 있습니다.</p>
     </section>
 
@@ -264,12 +264,22 @@
     <section id="career">
       <h2>Career</h2>
       <div class="card">
-        <div class="top"><h3>MUSTIT <span class="sub"> SW 엔지니어 | Tech Team</span></h3><span class="period">2025.11 – 재직 중</span></div>
-        <p class="desc">상품 3,000만 건 규모 명품 커머스의 카탈로그·정산·Open API 백엔드를 담당. 카탈로그 매칭 파이프라인 고도화부터 크로스보더 정산, 파트너 셀러 연동 API까지 설계·개발했습니다.</p>
+        <div class="top"><h3>MUSTIT <span class="sub">SW 엔지니어 | Tech Team</span></h3><span class="period">2025.11 – 재직 중</span></div>
+        <p class="desc">상품 3,000만 건 규모 명품 커머스 플랫폼의 백엔드를 담당. 카탈로그 매칭 파이프라인 고도화부터 크로스보더 정산, 파트너 주문 Open API까지 설계·개발했습니다.</p>
+        <ul class="bullets">
+          <li>Core(카탈로그) 서비스 고도화</li>
+          <li>해외 판로(eBay) 확대 — 크로스보더 매입·정산 시스템 구축</li>
+          <li>파트너 셀러용 주문 연동 외부 Open API 개발</li>
+          <li>주문 도메인을 기존 PHP 레거시에서 MSA로 마이그레이션</li>
+        </ul>
       </div>
       <div class="card">
-        <div class="top"><h3>현대오토에버 <span class="sub"> 책임 | Global Data Standardization Team</span></h3><span class="period">2023.01 – 2025.10</span></div>
-        <p class="desc">현대차그룹의 글로벌 BI·손익관리 시스템을 운영·개발. 데이터 정합성과 성능 개선에 집중했습니다.</p>
+        <div class="top"><h3>현대오토에버 <span class="sub">책임 | Global Data Standardization Team</span></h3><span class="period">2023.01 – 2025.10</span></div>
+        <p class="desc">현대차그룹의 글로벌 손익관리 BI 시스템을 <b>3년간 운영</b>하며 다수의 신규 기능을 개발했고, 기아 KPI 관리 시스템 <b>신규 구축 프로젝트에 백엔드로 참여</b>했습니다. 데이터 정합성과 성능 개선에 집중했습니다.</p>
+        <ul class="bullets">
+          <li>현대차 물량손익관리시스템 3년 운영 및 다수 신규 기능 개발</li>
+          <li>기아 KPI 관리 시스템 신규 구축 — DB 설계, 인증/인가(HMG-SSO), KPI 도메인 API 개발</li>
+        </ul>
       </div>
     </section>
 
@@ -300,11 +310,12 @@
 
       <div class="card">
         <div class="top"><h3>파트너 셀러 주문 연동 Open API <span class="sub">· MUSTIT</span></h3><span class="period">2026.05 – 2026.06</span></div>
-        <p class="desc">파트너 셀러가 자체 ERP/OMS에서 머스트잇 주문을 연동·관리할 수 있는 공개 REST API. 데이터 정합성과 외부 트래픽 안정성을 고려해 설계했습니다.</p>
+        <p class="desc">파트너 셀러가 자체 OMS/ERP에서 머스트잇 주문을 직접 처리할 수 있도록 외부 공개 REST API를 열어준 프로젝트. 데이터 정합성과 외부 트래픽 안정성을 고려해 설계하고, 복잡성 때문에 레거시 PHP에 남아 있던 주문 도메인을 이 작업과 함께 MSA로 마이그레이션했습니다.</p>
         <ul class="bullets">
-          <li>주문 생애주기(조회 / 배송 / 취소 / 교환·반품) 엔드포인트 설계·개발</li>
+          <li>주문 생애주기(조회 / 발송 / 취소 / 교환·반품) 엔드포인트 설계·개발</li>
           <li>단일 엔드포인트 통합 + 멱등성 처리로 동시 주문 변경 정합성 확보</li>
           <li>Rate Limiting + 페이지네이션으로 외부 트래픽·DB 부하 차단</li>
+          <li>복잡성으로 레거시 PHP에 남아 있던 주문 도메인을 MSA로 마이그레이션 (API 개발과 병행)</li>
         </ul>
         <div class="tags"><span class="tag">Kotlin/Spring Boot</span><span class="tag">JPA</span><span class="tag">Redis</span><span class="tag">AWS API Gateway</span></div>
       </div>
